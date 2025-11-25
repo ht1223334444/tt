@@ -1,0 +1,413 @@
+DataUlti.cs
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Data.SqlClient;
+namespace De1.Models
+{
+    public class DataUlti
+    {
+        SqlConnection conn;
+
+        public DataUlti()
+        {
+            string sqlcon = @"Data Source=.\SQLEXPRESS;Initial Catalog=MyDatabase;Integrated Security=True;";
+            conn = new SqlConnection(sqlcon);
+        }
+        public List<Nhanvien> dsNhanviens()
+        {
+            var ds = new List<Nhanvien>();
+            string sql = "select * from Nhanvien";
+            SqlCommand cmd = new SqlCommand(sql, conn);
+            conn.Open();
+            SqlDataReader dr = cmd.ExecuteReader();
+            while (dr.Read())
+            {
+                var nv = new Nhanvien();
+                nv.manv = (int)dr["manv"];
+                nv.hotennv = (string)dr["hotennv"];
+                nv.tuoi = (int)dr["tuoi"];
+                nv.diachi = (string)dr["diachi"];
+                nv.maphong = (int)dr["maphong"];
+                ds.Add(nv);
+            }
+            conn.Close();
+            return ds;
+        }
+        public Nhanvien lay1Nhanviens(int manv)
+        {
+            var ds = new List<Nhanvien>();
+            string sql = "select * from Nhanvien where manv = @manv";
+            SqlCommand cmd = new SqlCommand(sql, conn);
+            conn.Open();
+            cmd.Parameters.AddWithValue("@manv",manv);
+            Nhanvien nv = null;
+            SqlDataReader dr = cmd.ExecuteReader();
+            if (dr.Read())
+            {
+                nv = new Nhanvien();
+                nv.manv = (int)dr["manv"];
+                nv.hotennv = (string)dr["hotennv"];
+                nv.tuoi = (int)dr["tuoi"];
+                nv.diachi = (string)dr["diachi"];
+                nv.maphong = (int)dr["maphong"];
+               
+            }
+            conn.Close();
+            return nv;
+        }
+        public List<Phongban> dsphongs()
+        {
+            var ds = new List<Phongban>();
+            string sql = "select * from Phongban";
+            SqlCommand cmd = new SqlCommand(sql, conn);
+            conn.Open();
+            SqlDataReader dr = cmd.ExecuteReader();
+            while (dr.Read())
+            {
+                var pb = new Phongban();
+                pb.maphong = (int)dr["maphong"];
+                pb.tenphong = (string)dr["tenphong"];
+                ds.Add(pb);
+            }
+            conn.Close();
+            return ds;
+        }
+        public void ThemNV(Nhanvien nv)
+        {
+            string sql = "insert into Nhanvien values(@hotennv,@tuoi,@diachi,@maphong)";
+            SqlCommand cmd = new SqlCommand(sql, conn);
+            conn.Open();
+            cmd.Parameters.AddWithValue("hotennv",nv.hotennv);
+            cmd.Parameters.AddWithValue("tuoi",nv.tuoi);
+            cmd.Parameters.AddWithValue("diachi",nv.diachi);
+            cmd.Parameters.AddWithValue("maphong",nv.maphong);
+            cmd.ExecuteNonQuery();
+            conn.Close();
+        }
+        public void XoaNV(int manv)
+        {
+            string sql = "delete from Nhanvien where manv=@manv";
+            SqlCommand cmd= new SqlCommand(sql, conn);
+            conn.Open();
+            cmd.Parameters.AddWithValue("manv",manv);
+            cmd.ExecuteNonQuery();
+            conn.Close();
+        }
+        public void SauNV(Nhanvien nv)
+        {
+            string sql = "update Nhanvien set hotennv=@hotennv,tuoi=@tuoi,diachi=@diachi,maphong=@maphong where manv=@manv";
+            SqlCommand cmd = new SqlCommand(sql, conn);
+            conn.Open();
+            cmd.Parameters.AddWithValue("manv", nv.manv);
+            cmd.Parameters.AddWithValue("hotennv", nv.hotennv);
+            cmd.Parameters.AddWithValue("tuoi", nv.tuoi);
+            cmd.Parameters.AddWithValue("diachi", nv.diachi);
+            cmd.Parameters.AddWithValue("maphong", nv.maphong);
+            cmd.ExecuteNonQuery();
+            conn.Close();
+        }
+    }
+}
+List.aspx
+<%@ Page Title="" Language="C#" MasterPageFile="~/Site1.Master" AutoEventWireup="true" CodeBehind="List.aspx.cs" Inherits="De1.List" %>
+<asp:Content ID="Content1" ContentPlaceHolderID="content1" runat="server">
+        <style type="text/css">
+        .auto-style1 {
+            width:640px;
+        }
+        .btn-xoa {
+/*    border-radius: 4px;*/
+/*    cursor: pointer;*/
+/*    transition: 0.2s ease;*/
+}
+
+/*.btn-xoa:hover {
+    transform: scale(1.05);
+}
+*/
+    </style>
+    <h2>Danh sách nhân viên</h2>
+    <br />
+    <asp:GridView id="grdnv" runat="server" AutoGenerateColumns="False" CssClass="auto-style1" CellPadding="4" ForeColor="#333333" GridLines="None">
+        <AlternatingRowStyle BackColor="White" />
+        <Columns>
+            <asp:BoundField HeaderText="Mã nhân viên" DataField="manv" ItemStyle-HorizontalAlign="Center"/>
+            <asp:BoundField HeaderText="Họ tên nhân viên" DataField="hotennv" ItemStyle-HorizontalAlign="Center"/>
+            <asp:BoundField HeaderText="Tuổi" DataField="tuoi" ItemStyle-HorizontalAlign="Center"/>
+            <asp:BoundField HeaderText="Địa chỉ" DataField="diachi" ItemStyle-HorizontalAlign="Center"/>
+            <asp:BoundField HeaderText="Mã phòng" DataField="maphong" ItemStyle-HorizontalAlign="Center" />
+            <asp:TemplateField ItemStyle-HorizontalAlign="Center">
+                <ItemTemplate>
+                    <asp:Button CssClass="btn-xoa" ID="btnXoa" runat="server" Text="Xóa" CommandArgument='<%# Bind("manv") %>' CommandName="xoa" OnCommand="Xoa_Click" OnClientClick="return confirm('Bạn có chắc chắn muốn xóa nhân viên này không?')" BackColor="Red" ForeColor="White" BorderColor="Red" Style="padding:5px 10px; margin:5px;border:none;cursor: pointer;border-radius: 4px;" />
+                    <asp:Button CssClass="btn-xoa" ID="btnSua" runat="server" Text="Sửa" CommandArgument='<%# Bind("manv") %>' CommandName="sua" OnCommand="Sua_Click" BackColor="Blue" ForeColor="White" BorderColor="Blue" Style="padding:5px 10px; margin:5px;border:none;cursor: pointer;border-radius: 4px;"/>
+                </ItemTemplate>
+            </asp:TemplateField>
+            <asp:TemplateField ItemStyle-HorizontalAlign="Center">
+    <ItemTemplate>
+        
+    </ItemTemplate>
+</asp:TemplateField>
+        </Columns>
+        <EditRowStyle BackColor="#7C6F57" />
+        <FooterStyle BackColor="#1C5E55" Font-Bold="True" ForeColor="White" />
+        <HeaderStyle BackColor="#1C5E55" Font-Bold="True" ForeColor="White" />
+        <PagerStyle BackColor="#666666" ForeColor="White" HorizontalAlign="Center" />
+        <RowStyle BackColor="#E3EAEB" />
+        <SelectedRowStyle BackColor="#C5BBAF" Font-Bold="True" ForeColor="#333333" />
+        <SortedAscendingCellStyle BackColor="#F8FAFA" />
+        <SortedAscendingHeaderStyle BackColor="#246B61" />
+        <SortedDescendingCellStyle BackColor="#D4DFE1" />
+        <SortedDescendingHeaderStyle BackColor="#15524A" />
+    </asp:GridView>
+    <br />
+    <asp:Button ID="Button1" runat="server" Text="Thêm nhân viên" PostBackUrl="~/Add.aspx"/>
+</asp:Content>
+<asp:Content ID="Content2" runat="server" contentplaceholderid="head">
+    
+</asp:Content>
+
+
+using De1.Models;//
+using System;
+using System.CodeDom;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+
+namespace De1
+{
+    public partial class List : System.Web.UI.Page
+    {
+        DataUlti data = new DataUlti();
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!IsPostBack)
+            {
+                HienThi();
+            }
+        }
+
+        private void HienThi()
+        {
+            grdnv.DataSource = data.dsNhanviens();
+            DataBind();
+        }
+        protected void Xoa_Click(object sender, CommandEventArgs e)
+        {
+            if (e.CommandName == "xoa")
+            {
+                int manv = int.Parse(e.CommandArgument.ToString());
+                data.XoaNV(manv);
+                HienThi();
+            }
+        }
+        protected void Sua_Click(object sender, CommandEventArgs e)
+        {
+            if (e.CommandName == "sua")
+            {
+                int manv = Convert.ToInt16(e.CommandArgument);
+                Nhanvien nv = data.lay1Nhanviens(manv);
+                Session["nv"] = nv;
+                Response.Redirect("Update.aspx");
+            }
+        }
+    }
+}
+
+
+Add.aspx
+<%@ Page Title="" Language="C#" MasterPageFile="~/Site1.Master" AutoEventWireup="true" CodeBehind="Add.aspx.cs" Inherits="De1.Add" %>
+<asp:Content ID="Content1" ContentPlaceHolderID="content1" runat="server">
+    <style>
+        table td {
+    padding: 10px 0 !important;
+}
+</style>
+    <asp:Table ID="Table1" runat="server" >
+        <asp:TableRow>
+            <asp:TableCell>Họ tên nhân viên</asp:TableCell>
+            <asp:TableCell>
+                <asp:TextBox ID="txtht" runat="server"></asp:TextBox></asp:TableCell>
+        </asp:TableRow>
+        <asp:TableRow>
+    <asp:TableCell>Tuổi</asp:TableCell>
+    <asp:TableCell>
+        <asp:TextBox ID="txttuoi" runat="server"></asp:TextBox></asp:TableCell>
+</asp:TableRow>
+        <asp:TableRow>
+    <asp:TableCell>Địa chỉ</asp:TableCell>
+    <asp:TableCell>
+        <asp:TextBox ID="txtdc" runat="server"></asp:TextBox></asp:TableCell>
+</asp:TableRow>
+        <asp:TableRow>
+    <asp:TableCell>Phòng</asp:TableCell>
+    <asp:TableCell>
+        <asp:DropDownList ID="ddlphong" runat="server"></asp:DropDownList>
+    </asp:TableCell>
+</asp:TableRow>
+    </asp:Table>
+    <asp:Button ID="btnThem" runat="server" Text="Thêm nhân viên" OnClick="btnThem_Click" ForeColor="White" BackColor="HotPink" BorderColor="HotPink" Style="cursor:pointer;border-radius:4px;border:none;height:20px;width:140px;"/>
+    <asp:Label ID="msg" runat="server" Text="" ForeColor="Red"></asp:Label>
+</asp:Content>
+
+
+using De1.Models;//
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Configuration;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+
+namespace De1
+{
+    public partial class Add : System.Web.UI.Page
+    {
+        DataUlti data = new DataUlti();
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!IsPostBack)
+            {
+                ddlphong.DataSource = data.dsphongs();
+                ddlphong.DataTextField = "tenphong";
+                ddlphong.DataValueField = "maphong";
+                DataBind();
+            }
+        }
+
+        protected void btnThem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Nhanvien nv = new Nhanvien();
+                nv.hotennv = txtht.Text;
+                nv.tuoi = int.Parse(txttuoi.Text);
+                nv.diachi = txtdc.Text;
+                nv.maphong = int.Parse(ddlphong.SelectedValue);
+                data.ThemNV(nv);
+                msg.Text = "Thêm thành công";
+                Response.Redirect("List.aspx");
+            }
+            catch (Exception ex)
+            {
+                msg.Text = $"Có lỗi khi thêm! {ex.Message}";
+            }
+        }
+    }
+}
+
+
+
+
+
+
+
+<%@ Page Title="" Language="C#" MasterPageFile="~/Site1.Master" AutoEventWireup="true" CodeBehind="Update.aspx.cs" Inherits="De1.Update" %>
+<asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
+</asp:Content>
+<asp:Content ID="Content2" ContentPlaceHolderID="content1" runat="server">
+        <style>
+        table td {
+    padding: 10px 0 !important;
+}
+</style>
+    <asp:Table ID="Table1" runat="server" >
+        <asp:TableRow>
+    <asp:TableCell>Mã nhân viên</asp:TableCell>
+    <asp:TableCell>
+        <asp:TextBox ID="txtmanv" runat="server" Enabled="false"></asp:TextBox></asp:TableCell>
+</asp:TableRow>
+        <asp:TableRow>
+            <asp:TableCell>Họ tên nhân viên</asp:TableCell>
+            <asp:TableCell>
+                <asp:TextBox ID="txtht" runat="server"></asp:TextBox></asp:TableCell>
+        </asp:TableRow>
+        <asp:TableRow>
+    <asp:TableCell>Tuổi</asp:TableCell>
+    <asp:TableCell>
+        <asp:TextBox ID="txttuoi" runat="server"></asp:TextBox></asp:TableCell>
+</asp:TableRow>
+        <asp:TableRow>
+    <asp:TableCell>Địa chỉ</asp:TableCell>
+    <asp:TableCell>
+        <asp:TextBox ID="txtdc" runat="server"></asp:TextBox></asp:TableCell>
+</asp:TableRow>
+        <asp:TableRow>
+    <asp:TableCell>Phòng</asp:TableCell>
+    <asp:TableCell>
+        <asp:DropDownList ID="ddlphong" runat="server"></asp:DropDownList>
+    </asp:TableCell>
+</asp:TableRow>
+    </asp:Table>
+    <asp:Button ID="btnSua" runat="server" Text="Sửa nhân viên" OnClick="btnSua_Click" ForeColor="White" BackColor="HotPink" BorderColor="HotPink" Style="cursor:pointer;border-radius:4px;border:none;height:20px;width:140px;"/>
+    <asp:Label ID="msg" runat="server" Text="" ForeColor="Red"></asp:Label>
+</asp:Content>
+
+
+
+
+
+
+
+
+
+
+
+
+
+using De1.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+
+namespace De1
+{
+    public partial class Update : System.Web.UI.Page
+    {
+        DataUlti data= new DataUlti();
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!IsPostBack)
+            {
+                Nhanvien nv = (Nhanvien)Session["nv"];
+                txtmanv.Text=nv.manv.ToString();
+                txtht.Text=nv.hotennv;
+                txttuoi.Text = nv.tuoi.ToString();
+                txtdc.Text=nv.diachi;
+                ddlphong.DataSource = data.dsphongs();
+                ddlphong.DataTextField = "tenphong";
+                ddlphong.DataValueField = "maphong";
+                ddlphong.DataBind();
+                ddlphong.SelectedValue =nv.maphong.ToString();
+            }
+        }
+
+        protected void btnSua_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Nhanvien nv = new Nhanvien();
+                nv.manv = int.Parse(txtmanv.Text);
+                nv.hotennv = txtht.Text;
+                nv.tuoi = int.Parse(txttuoi.Text);
+                nv.diachi = txtdc.Text;
+                nv.maphong = int.Parse(ddlphong.SelectedValue);
+                data.SauNV(nv);
+                Response.Redirect("List.aspx");
+            }
+            catch (Exception ex)
+            {
+                msg.Text = $"Có lỗi khi sửa!{ex.Message}";
+            }
+        }
+    }
+}
+
