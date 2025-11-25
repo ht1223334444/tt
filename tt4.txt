@@ -1,0 +1,321 @@
+Them.aspx.cs
+using System;
+using System.Web.UI.WebControls;
+
+namespace WebApplication3
+{
+    public partial class Them : System.Web.UI.Page
+    {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        protected void InsertedCmd(object sender, FormViewInsertedEventArgs e)
+        {
+            if (e.Exception != null)
+            {
+                e.KeepInInsertMode = true;
+                e.ExceptionHandled = true;
+                errmsg.Text = "Lỗi khi nhập : " + e.Exception.Message;
+            }
+        }
+    }
+}
+
+
+
+
+Sua.aspx
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Sua.aspx.cs" Inherits="WebApplication3.Sua_" %>
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title></title>
+</head>
+<body>
+    <form id="form1" runat="server">
+        <div>
+            <h2>Sửa thông tin sinh viên</h2>
+            <asp:FormView ID="FormView1" runat="server" DataKeyNames="masv" DataSourceID="SqlDataSource1" DefaultMode="Edit" Width="547px">
+                <EditItemTemplate>
+                    masv:
+                    <asp:Label ID="masvLabel1" runat="server" Text='<%# Eval("masv") %>' />
+                    <br />
+                    hoten:
+                    <asp:TextBox ID="hotenTextBox" runat="server" Text='<%# Bind("hoten") %>' />
+                    <br />
+                    diachi:
+                    <asp:TextBox ID="diachiTextBox" runat="server" Text='<%# Bind("diachi") %>' />
+                    <br />
+                    diem:
+                    <asp:TextBox ID="diemTextBox" runat="server" Text='<%# Bind("diem") %>' />
+                    <br />
+                    malop:
+                    <asp:DropDownList ID="DropDownList1" runat="server" DataSourceID="SqlDataSource12" DataTextField="tenlop" DataValueField="malop" SelectedValue='<%# Bind("malop") %>'>
+                    </asp:DropDownList>
+                    <asp:SqlDataSource ID="SqlDataSource12" runat="server" ConnectionString="<%$ ConnectionStrings:truonghocdb2ConnectionString %>" SelectCommand="SELECT * FROM [lophoc]"></asp:SqlDataSource>
+                    <br />
+                    anh:
+                    <asp:TextBox ID="anhTextBox" runat="server" Text='<%# Bind("anh") %>' />
+                    <br />
+                    <asp:LinkButton ID="UpdateButton" runat="server" CausesValidation="True" CommandName="Update" Text="Update" />
+&nbsp;<asp:LinkButton ID="UpdateCancelButton" runat="server" CausesValidation="False" CommandName="Cancel" Text="Cancel" />
+                </EditItemTemplate>
+                <InsertItemTemplate>
+                    masv:
+                    <asp:TextBox ID="masvTextBox" runat="server" Text='<%# Bind("masv") %>' />
+                    <br />
+                    hoten:
+                    <asp:TextBox ID="hotenTextBox" runat="server" Text='<%# Bind("hoten") %>' />
+                    <br />
+                    diachi:
+                    <asp:TextBox ID="diachiTextBox" runat="server" Text='<%# Bind("diachi") %>' />
+                    <br />
+                    diem:
+                    <asp:TextBox ID="diemTextBox" runat="server" Text='<%# Bind("diem") %>' />
+                    <br />
+                    malop:
+                    <asp:TextBox ID="malopTextBox" runat="server" Text='<%# Bind("malop") %>' />
+                    <br />
+                    anh:
+                    <asp:TextBox ID="anhTextBox" runat="server" Text='<%# Bind("anh") %>' />
+                    <br />
+                    <asp:LinkButton ID="InsertButton" runat="server" CausesValidation="True" CommandName="Insert" Text="Insert" />
+                    &nbsp;<asp:LinkButton ID="InsertCancelButton" runat="server" CausesValidation="False" CommandName="Cancel" Text="Cancel" />
+                </InsertItemTemplate>
+                <ItemTemplate>
+                    masv:
+                    <asp:Label ID="masvLabel" runat="server" Text='<%# Eval("masv") %>' />
+                    <br />
+                    hoten:
+                    <asp:Label ID="hotenLabel" runat="server" Text='<%# Bind("hoten") %>' />
+                    <br />
+                    diachi:
+                    <asp:Label ID="diachiLabel" runat="server" Text='<%# Bind("diachi") %>' />
+                    <br />
+                    diem:
+                    <asp:Label ID="diemLabel" runat="server" Text='<%# Bind("diem") %>' />
+                    <br />
+                    malop:
+                    <asp:Label ID="malopLabel" runat="server" Text='<%# Bind("malop") %>' />
+                    <br />
+                    anh:
+                    <asp:Label ID="anhLabel" runat="server" Text='<%# Bind("anh") %>' />
+                    <br />
+                    <asp:LinkButton ID="EditButton" runat="server" CausesValidation="False" CommandName="Edit" Text="Edit" />
+                    &nbsp;<asp:LinkButton ID="DeleteButton" runat="server" CausesValidation="False" CommandName="Delete" Text="Delete" />
+                    &nbsp;<asp:LinkButton ID="NewButton" runat="server" CausesValidation="False" CommandName="New" Text="New" />
+                </ItemTemplate>
+            </asp:FormView>
+            <asp:SqlDataSource ID="SqlDataSource1" runat="server" 
+                ConnectionString="<%$ ConnectionStrings:truonghocdb2ConnectionString %>" 
+                SelectCommand="SELECT * FROM [sinhvien] where [masv]=@masv"
+                UpdateCommand="UPDATE [sinhvien] SET [hoten] = @hoten, [diachi] = @diachi, [diem] = @diem, [malop] = @malop, [anh] = @anh WHERE [masv] = @masv">
+                <SelectParameters>
+                    <asp:QueryStringParameter Name="masv" Type="Int32" QueryStringField="masv" />
+                </SelectParameters>
+                
+                <UpdateParameters>
+                    <asp:Parameter Name="hoten" Type="String" />
+                    <asp:Parameter Name="diachi" Type="String" />
+                    <asp:Parameter Name="diem" Type="Byte" />
+                    <asp:Parameter Name="malop" Type="Int32" />
+                    <asp:Parameter Name="anh" Type="String" />
+                    <asp:Parameter Name="masv" Type="Int32" />
+                </UpdateParameters>
+            </asp:SqlDataSource>
+            <br />
+            <br />
+            <a href="Danhsach.aspx">Danh sách sinh viên</a>
+        </div>
+    </form>
+</body>
+</html>
+
+
+
+
+Them.aspx
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Them.aspx.cs" Inherits="WebApplication3.Them" %>
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title></title>
+</head>
+<body>
+    <form id="form1" runat="server">
+        <div>
+            <h2>Thêm sinh viên</h2>
+            <asp:FormView ID="FormView1" runat="server" DataKeyNames="masv" DataSourceID="SqlDataSource1" DefaultMode="Insert" Width="641px" OnItemInserted="InsertedCmd">
+                <EditItemTemplate>
+                    masv:
+                    <asp:Label ID="masvLabel1" runat="server" Text='<%# Eval("masv") %>' />
+                    <br />
+                    hoten:
+                    <asp:TextBox ID="hotenTextBox" runat="server" Text='<%# Bind("hoten") %>' />
+                    <br />
+                    diachi:
+                    <asp:TextBox ID="diachiTextBox" runat="server" Text='<%# Bind("diachi") %>' />
+                    <br />
+                    diem:
+                    <asp:TextBox ID="diemTextBox" runat="server" Text='<%# Bind("diem") %>' />
+                    <br />
+                    malop:
+                    <asp:TextBox ID="malopTextBox" runat="server" Text='<%# Bind("malop") %>' />
+                    <br />
+                    anh:
+                    <asp:TextBox ID="anhTextBox" runat="server" Text='<%# Bind("anh") %>' />
+                    <br />
+                    <asp:LinkButton ID="UpdateButton" runat="server" CausesValidation="True" CommandName="Update" Text="Update" />
+                    &nbsp;<asp:LinkButton ID="UpdateCancelButton" runat="server" CausesValidation="False" CommandName="Cancel" Text="Cancel" />
+                </EditItemTemplate>
+                <InsertItemTemplate>
+                    masv:
+                    <asp:TextBox ID="masvTextBox" runat="server" Text='<%# Bind("masv") %>' />
+                    <br />
+                    hoten:
+                    <asp:TextBox ID="hotenTextBox" runat="server" Text='<%# Bind("hoten") %>' />
+                    <br />
+                    diachi:
+                    <asp:TextBox ID="diachiTextBox" runat="server" Text='<%# Bind("diachi") %>' />
+                    <br />
+                    diem:
+                    <asp:TextBox ID="diemTextBox" runat="server" Text='<%# Bind("diem") %>' />
+                    <br />
+                    malop:
+                    <asp:DropDownList ID="DropDownList1" runat="server" DataSourceID="SqlDataSource14" DataTextField="tenlop" DataValueField="malop" SelectedValue='<%# Bind("malop") %>'>
+                    </asp:DropDownList>
+                    <asp:SqlDataSource ID="SqlDataSource14" runat="server" ConnectionString="<%$ ConnectionStrings:truonghocdb2ConnectionString %>" SelectCommand="SELECT * FROM [lophoc]"></asp:SqlDataSource>
+                    <br />
+                    anh:
+                    <asp:TextBox ID="anhTextBox" runat="server" Text='<%# Bind("anh") %>' />
+                    <br />
+                    <asp:LinkButton ID="InsertButton" runat="server" CausesValidation="True" CommandName="Insert" Text="Insert" />
+&nbsp;<asp:LinkButton ID="InsertCancelButton" runat="server" CausesValidation="False" CommandName="Cancel" Text="Cancel" />
+                </InsertItemTemplate>
+                <ItemTemplate>
+                    masv:
+                    <asp:Label ID="masvLabel" runat="server" Text='<%# Eval("masv") %>' />
+                    <br />
+                    hoten:
+                    <asp:Label ID="hotenLabel" runat="server" Text='<%# Bind("hoten") %>' />
+                    <br />
+                    diachi:
+                    <asp:Label ID="diachiLabel" runat="server" Text='<%# Bind("diachi") %>' />
+                    <br />
+                    diem:
+                    <asp:Label ID="diemLabel" runat="server" Text='<%# Bind("diem") %>' />
+                    <br />
+                    malop:
+                    <asp:Label ID="malopLabel" runat="server" Text='<%# Bind("malop") %>' />
+                    <br />
+                    anh:
+                    <asp:Label ID="anhLabel" runat="server" Text='<%# Bind("anh") %>' />
+                    <br />
+                    <asp:LinkButton ID="EditButton" runat="server" CausesValidation="False" CommandName="Edit" Text="Edit" />
+                    &nbsp;<asp:LinkButton ID="DeleteButton" runat="server" CausesValidation="False" CommandName="Delete" Text="Delete" />
+                    &nbsp;<asp:LinkButton ID="NewButton" runat="server" CausesValidation="False" CommandName="New" Text="New" />
+                </ItemTemplate>
+            </asp:FormView>
+            <asp:SqlDataSource ID="SqlDataSource1" runat="server" ConnectionString="<%$ ConnectionStrings:truonghocdb2ConnectionString %>" DeleteCommand="DELETE FROM [sinhvien] WHERE [masv] = @masv" InsertCommand="INSERT INTO [sinhvien] ([masv], [hoten], [diachi], [diem], [malop], [anh]) VALUES (@masv, @hoten, @diachi, @diem, @malop, @anh)" SelectCommand="SELECT * FROM [sinhvien]" UpdateCommand="UPDATE [sinhvien] SET [hoten] = @hoten, [diachi] = @diachi, [diem] = @diem, [malop] = @malop, [anh] = @anh WHERE [masv] = @masv">
+                <DeleteParameters>
+                    <asp:Parameter Name="masv" Type="Int32" />
+                </DeleteParameters>
+                <InsertParameters>
+                    <asp:Parameter Name="masv" Type="Int32" />
+                    <asp:Parameter Name="hoten" Type="String" />
+                    <asp:Parameter Name="diachi" Type="String" />
+                    <asp:Parameter Name="diem" Type="Byte" />
+                    <asp:Parameter Name="malop" Type="Int32" />
+                    <asp:Parameter Name="anh" Type="String" />
+                </InsertParameters>
+                <UpdateParameters>
+                    <asp:Parameter Name="hoten" Type="String" />
+                    <asp:Parameter Name="diachi" Type="String" />
+                    <asp:Parameter Name="diem" Type="Byte" />
+                    <asp:Parameter Name="malop" Type="Int32" />
+                    <asp:Parameter Name="anh" Type="String" />
+                    <asp:Parameter Name="masv" Type="Int32" />
+                </UpdateParameters>
+            </asp:SqlDataSource>
+            <asp:Label ID="errmsg" runat="server" ForeColor="Red"></asp:Label>
+            <br />
+            <br />
+            <a href="Danhsach.aspx">Danh sách sinh viên</a>
+        </div>
+    </form>
+</body>
+</html>
+
+
+
+Danhsach.aspx
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Danhsach.aspx.cs" Inherits="WebApplication3.Danhsach" %>
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title></title>
+</head>
+<body>
+    <form id="form1" runat="server">
+        <div>
+            <h1>Danh sách sinh viên</h1>
+            <asp:GridView ID="GridView1" runat="server" AllowPaging="True" AllowSorting="True" AutoGenerateColumns="False" DataKeyNames="masv" DataSourceID="SqlDataSource1">
+                <Columns>
+                    <asp:BoundField DataField="masv" HeaderText="masv" ReadOnly="True" SortExpression="masv" />
+                    <asp:BoundField DataField="hoten" HeaderText="hoten" SortExpression="hoten" />
+                    <asp:BoundField DataField="diachi" HeaderText="diachi" SortExpression="diachi" />
+                    <asp:BoundField DataField="diem" HeaderText="diem" SortExpression="diem" />
+                    <asp:BoundField DataField="malop" HeaderText="malop" SortExpression="malop" />
+                    <asp:BoundField DataField="anh" HeaderText="anh" SortExpression="anh" />
+                    <asp:TemplateField HeaderText="Delete">
+                        <ItemTemplate>
+                            &nbsp;<asp:LinkButton ID="LinkButton3" runat="server" CausesValidation="False" CommandName="Delete" Text="Delete"
+                                OnClientClick="return confirm('Bạn có chắc chắn muốn xóa ?')"></asp:LinkButton>
+                        </ItemTemplate>
+                    </asp:TemplateField>
+                    <asp:HyperLinkField DataNavigateUrlFields="masv"
+                        DataNavigateUrlFormatString="Sua.aspx?masv={0}" 
+                        Text="Edit" HeaderText="Edit" />
+
+                </Columns>
+            </asp:GridView>
+            <asp:SqlDataSource ID="SqlDataSource1" runat="server" ConnectionString="<%$ ConnectionStrings:truonghocdb2ConnectionString2 %>" DeleteCommand="DELETE FROM [sinhvien] WHERE [masv] = @masv" InsertCommand="INSERT INTO [sinhvien] ([masv], [hoten], [diachi], [diem], [malop], [anh]) VALUES (@masv, @hoten, @diachi, @diem, @malop, @anh)" ProviderName="<%$ ConnectionStrings:truonghocdb2ConnectionString2.ProviderName %>" SelectCommand="SELECT * FROM [sinhvien]" UpdateCommand="UPDATE [sinhvien] SET [hoten] = @hoten, [diachi] = @diachi, [diem] = @diem, [malop] = @malop, [anh] = @anh WHERE [masv] = @masv">
+                <DeleteParameters>
+                    <asp:Parameter Name="masv" Type="Int32" />
+                </DeleteParameters>
+                <InsertParameters>
+                    <asp:Parameter Name="masv" Type="Int32" />
+                    <asp:Parameter Name="hoten" Type="String" />
+                    <asp:Parameter Name="diachi" Type="String" />
+                    <asp:Parameter Name="diem" Type="Byte" />
+                    <asp:Parameter Name="malop" Type="Int32" />
+                    <asp:Parameter Name="anh" Type="String" />
+                </InsertParameters>
+                <UpdateParameters>
+                    <asp:Parameter Name="hoten" Type="String" />
+                    <asp:Parameter Name="diachi" Type="String" />
+                    <asp:Parameter Name="diem" Type="Byte" />
+                    <asp:Parameter Name="malop" Type="Int32" />
+                    <asp:Parameter Name="anh" Type="String" />
+                    <asp:Parameter Name="masv" Type="Int32" />
+                </UpdateParameters>
+            </asp:SqlDataSource>
+
+            <br />
+            <br />
+            <a href="Them.aspx">Thêm sinh viên</a>
+            <br />
+            <br />
+            <a href="Sua.aspx">Sửa sinh viên</a>
+        </div>
+    </form>
+</body>
+</html>
